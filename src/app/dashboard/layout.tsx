@@ -1,3 +1,5 @@
+"use client"
+
 import { UserButton } from '@clerk/nextjs'
 import Link from 'next/link'
 
@@ -9,7 +11,7 @@ export default function DashboardLayout({
   return (
     <div className="flex min-h-screen">
       {/* Sidebar */}
-      <div className="w-64 bg-gray-900 text-white flex flex-col p-6 gap-6">
+      <div className="w-64 bg-gray-900 text-white flex flex-col p-6 gap-6 fixed h-full">
         <div className="text-xl font-bold">Listify</div>
         <nav className="flex flex-col gap-2">
           <Link 
@@ -25,13 +27,14 @@ export default function DashboardLayout({
             Upload
           </Link>
         </nav>
-        <div className="mt-auto">
-          <UserButton />
+        <div className="mt-auto flex items-center gap-3">
+          <UserButton afterSignOutUrl="/" />
+          <span className="text-sm text-gray-400">Account</span>
         </div>
       </div>
 
       {/* Main content */}
-      <div className="flex-1 p-8 bg-gray-50">
+      <div className="flex-1 p-8 bg-gray-50 ml-64">
         {children}
       </div>
     </div>
