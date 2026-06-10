@@ -28,7 +28,7 @@ export default function DashboardLayout({
           </Link>
         </nav>
         <div className="mt-auto flex items-center gap-3">
-          <UserButton afterSignOutUrl="/" />
+          <UserButton />
           <span className="text-sm text-gray-400">Account</span>
         </div>
       </div>
