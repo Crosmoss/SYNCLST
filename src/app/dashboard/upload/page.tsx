@@ -9,6 +9,15 @@ export default function UploadPage() {
     const [previews, setPreviews] = useState<string[]>([])
     const [loading, setLoading] = useState(false)
 
+    const [listing, setListing] = useState<null | {
+    title: string
+    description: string
+    price: number
+    category: string
+    condition: string
+    tags: string[]
+    }>(null)
+
     // Functions
 
     // When a file is added, it is converted into an url object and stored
@@ -33,6 +42,47 @@ export default function UploadPage() {
     {
         setImages([])
         setPreviews([])
+          setListing(null)
+
+    }
+
+    // Generates the listing for the image, posting the picture
+    async function handleGenerate(){
+
+        // if no image, dont generate anything
+        if (images.length === 0) return
+        setLoading(true)
+
+        //returning only when all the files are done loading
+        const base64Images = await Promise.all(
+            images.map((image) => {
+                //returning the image in base64 after formatting
+                return new Promise<string>((resolve) => {
+                    const reader = new FileReader()
+                    reader.onload = () => {const base64 = (reader.result as string).split(',')[1] 
+                    resolve(base64)
+                    }
+
+                    reader.readAsDataURL(image)
+                })
+            })
+        )
+
+        // Posting the image to the api 
+        const response = await fetch('/api/generate-listing',
+            {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({images: base64Images})
+            }
+        )
+
+        // fetching the response back and inserting
+        // the result data into listing, loading is done
+        const data = await response.json()
+        setListing(data.listing)
+        setLoading(false)
+
     }
 
     return ( <div className="flex flex-col gap-6 max-w-3xl">
@@ -112,13 +162,55 @@ export default function UploadPage() {
       disabled = {images.length == 0 || loading}
       className="w-full bg-violet-600 hover:bg-violet-700 text-white py-6 text-lg font-bold rounded-xl"
 
-      // When clicked, the state is set tp true/loading
-      onClick={() => setLoading(true)}
+      // When clicked the function handles the listing details, the state is set to true/loading
+      onClick={handleGenerate}
       >
 
           {loading ? "Generating listing..." : "✨ Generate listing with AI"}
 
       </Button>
+
+      {listing && (
+        <div className="flex flex-col gap-4 border rounded-xl p-6 bg-white">
+            <h2 className="text-xl font-bold">Generated Listing</h2>
+            
+            <div>
+            <p className="text-sm text-gray-500">Title</p>
+            <p className="font-semibold">{listing.title}</p>
+            </div>
+
+            <div>
+            <p className="text-sm text-gray-500">Description</p>
+            <p>{listing.description}</p>
+            </div>
+
+            <div className="flex gap-6">
+            <div>
+                <p className="text-sm text-gray-500">Price</p>
+                <p className="font-semibold">${listing.price}</p>
+            </div>
+            <div>
+                <p className="text-sm text-gray-500">Category</p>
+                <p className="font-semibold">{listing.category}</p>
+            </div>
+            <div>
+                <p className="text-sm text-gray-500">Condition</p>
+                <p className="font-semibold">{listing.condition}</p>
+            </div>
+            </div>
+
+            <div>
+            <p className="text-sm text-gray-500">Tags</p>
+            <div className="flex gap-2 flex-wrap mt-1">
+                {listing.tags.map((tag) => (
+                <span key={tag} className="bg-violet-100 text-violet-700 text-sm px-3 py-1 rounded-full">
+                    {tag}
+                </span>
+                ))}
+            </div>
+            </div>
+        </div>
+        )}
 
 
     </div>
