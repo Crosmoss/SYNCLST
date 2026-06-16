@@ -3,20 +3,24 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
+import { useAuth } from '@clerk/nextjs'
+import { error } from "console"
 
 export default function UploadPage() {
     const [images, setImages] = useState<File[]>([])
     const [previews, setPreviews] = useState<string[]>([])
     const [loading, setLoading] = useState(false)
 
-    const [listing, setListing] = useState<null | {
-    title: string
-    description: string
-    price: number
-    category: string
-    condition: string
-    tags: string[]
-    }>(null)
+    // The generated results will be stored seperately and will allow user to edit
+    const [listing, setListing] = useState(false)
+    const [title, setTitle] = useState('')
+    const [description, setDescription] = useState('')
+    const [price, setPrice] = useState('')
+    const [category, setCategory] = useState('')
+    const [condition, setCondition] = useState('')
+    const [tags, setTags] = useState<string[]>([])
+    // the user id is needed to insert the listing to the database, so we get it from clerk authentication
+    const { userId } = useAuth()
 
     // Functions
 
@@ -37,13 +41,18 @@ export default function UploadPage() {
         setPreviews(updatedUrls)
     }
 
-    // Clearing all the pictures for resetting
+    // the listing is cleared for a new one to be generated, and the previews are cleared as well
     function handleClear()
     {
         setImages([])
         setPreviews([])
-          setListing(null)
-
+        setListing(false)
+        setTitle('')
+        setDescription('')
+        setPrice('')
+        setCategory('')
+        setCondition('')
+        setTags([])
     }
 
     // Generates the listing for the image, posting the picture
@@ -80,10 +89,59 @@ export default function UploadPage() {
         // fetching the response back and inserting
         // the result data into listing, loading is done
         const data = await response.json()
-        setListing(data.listing)
+        
+        setTitle(data.listing.title)
+        setDescription(data.listing.description)
+        setPrice(String(data.listing.price))
+        setCategory(data.listing.category)
+        setCondition(data.listing.condition)
+        setTags(data.listing.tags)
+        setListing(true)
         setLoading(false)
 
     }
+
+    async function handleSave() {
+
+        // sending the results to the backend
+        const response = await fetch('/api/save-listing', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+            title,
+            description,
+            price,
+            category,
+            condition,
+            tags,
+            images: await Promise.all(
+                images.map((image) => {
+                return new Promise<string>((resolve) => {
+                    const reader = new FileReader()
+                    reader.onload = () => {
+                    const base64 = (reader.result as string).split(',')[1]
+                    resolve(base64)
+                    }
+                    reader.readAsDataURL(image)
+                })
+                })
+            )
+            })
+        })
+
+        const data = await response.json()
+        console.log(data)
+
+        if (data.error) {
+            alert('Error saving listing: ' + data.error)
+            return
+        }
+
+        alert('Listing saved successfully!')
+
+        
+        }
+
 
     return ( <div className="flex flex-col gap-6 max-w-3xl">
         
@@ -171,46 +229,73 @@ export default function UploadPage() {
       </Button>
 
       {listing && (
-        <div className="flex flex-col gap-4 border rounded-xl p-6 bg-white">
-            <h2 className="text-xl font-bold">Generated Listing</h2>
-            
-            <div>
-            <p className="text-sm text-gray-500">Title</p>
-            <p className="font-semibold">{listing.title}</p>
-            </div>
+  <div className="flex flex-col gap-4 border rounded-xl p-6 bg-white">
+    <h2 className="text-xl font-bold">Generated Listing</h2>
 
-            <div>
-            <p className="text-sm text-gray-500">Description</p>
-            <p>{listing.description}</p>
-            </div>
+    <div className="flex flex-col gap-1">
+      <label className="text-sm text-gray-500">Title</label>
+      <input
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+        className="border rounded-lg px-3 py-2 text-sm"
+      />
+    </div>
 
-            <div className="flex gap-6">
-            <div>
-                <p className="text-sm text-gray-500">Price</p>
-                <p className="font-semibold">${listing.price}</p>
-            </div>
-            <div>
-                <p className="text-sm text-gray-500">Category</p>
-                <p className="font-semibold">{listing.category}</p>
-            </div>
-            <div>
-                <p className="text-sm text-gray-500">Condition</p>
-                <p className="font-semibold">{listing.condition}</p>
-            </div>
-            </div>
+    <div className="flex flex-col gap-1">
+      <label className="text-sm text-gray-500">Description</label>
+      <textarea
+        value={description}
+        onChange={(e) => setDescription(e.target.value)}
+        rows={4}
+        className="border rounded-lg px-3 py-2 text-sm"
+      />
+    </div>
 
-            <div>
-            <p className="text-sm text-gray-500">Tags</p>
-            <div className="flex gap-2 flex-wrap mt-1">
-                {listing.tags.map((tag) => (
-                <span key={tag} className="bg-violet-100 text-violet-700 text-sm px-3 py-1 rounded-full">
-                    {tag}
-                </span>
-                ))}
-            </div>
-            </div>
-        </div>
-        )}
+    <div className="flex gap-4">
+      <div className="flex flex-col gap-1 flex-1">
+        <label className="text-sm text-gray-500">Price ($)</label>
+        <input
+          value={price}
+          onChange={(e) => setPrice(e.target.value)}
+          className="border rounded-lg px-3 py-2 text-sm"
+        />
+      </div>
+      <div className="flex flex-col gap-1 flex-1">
+        <label className="text-sm text-gray-500">Category</label>
+        <input
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
+          className="border rounded-lg px-3 py-2 text-sm"
+        />
+      </div>
+      <div className="flex flex-col gap-1 flex-1">
+        <label className="text-sm text-gray-500">Condition</label>
+        <input
+          value={condition}
+          onChange={(e) => setCondition(e.target.value)}
+          className="border rounded-lg px-3 py-2 text-sm"
+        />
+      </div>
+    </div>
+
+    <div className="flex flex-col gap-1">
+    <label className="text-sm text-gray-500">Tags (comma separated)</label>
+    <input
+        value={tags.join(', ')}
+        onChange={(e) => setTags(e.target.value.split(',').map(t => t.trim()))}
+        className="border rounded-lg px-3 py-2 text-sm"
+    />
+    </div>
+
+    <Button 
+    onClick={handleSave}
+    className="w-full bg-green-600 hover:bg-green-700 text-white py-4 font-bold rounded-xl">
+        
+      Save listing
+      
+    </Button>
+  </div>
+)}
 
 
     </div>

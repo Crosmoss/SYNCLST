@@ -1,6 +1,6 @@
 import { auth } from "@clerk/nextjs/server"
 import { NextRequest, NextResponse } from "next/server"
-
+import { CardDescription } from "@/components/ui/card"
 export async function POST(req: NextRequest)
 {
     //getting the confirmation from clerk for user
@@ -28,6 +28,9 @@ export async function POST(req: NextRequest)
     tags: ["vintage", "plush", "collectible", "toy"]
     }
     // ==================================================================================
+
+    // //Inserting the listing results to the database
+    
 
     return NextResponse.json({ listing: mockListing })
 }
