@@ -1,5 +1,6 @@
 import { currentUser } from '@clerk/nextjs/server'
 import { createClient } from '@supabase/supabase-js'
+import Link from 'next/link'
 
 export default async function DashboardPage() {
   const user = await currentUser()
@@ -51,9 +52,22 @@ export default async function DashboardPage() {
 
     {/* Listings */}
     <div>
-      <h2 className="text-lg font-bold mb-4">Your Listings</h2>
+      <div className="flex items-center justify-between mb-4">
+      <h2 className="text-lg font-bold">Your Listings</h2>
+      {listings && listings.length > 0 && (
+        <Link 
+          href="/dashboard/upload"
+          className="bg-violet-600 text-white px-4 py-2 rounded-full text-sm font-semibold hover:bg-violet-700 transition"
+        >
+          + New listing
+        </Link>
+      )}
+    </div>
+
+      
       {listings && listings.length > 0 ? (
         <div className="grid grid-cols-3 gap-4">
+          
           {listings.map((listing) => (
             <div key={listing.id} className="bg-white rounded-xl p-5 border shadow-sm flex flex-col gap-2">
               <div className="flex items-center justify-between">
@@ -71,7 +85,13 @@ export default async function DashboardPage() {
         <div className="bg-white rounded-xl p-12 border text-center">
           <p className="text-4xl mb-4">📦</p>
           <p className="font-semibold text-gray-700">No listings yet</p>
-          <p className="text-sm text-gray-400 mt-1">Upload photos to generate your first listing</p>
+          <Link 
+            href="/dashboard/upload"
+            className="mt-4 inline-block bg-violet-600 text-white px-6 py-2 rounded-full text-sm font-semibold hover:bg-violet-700 transition"
+          >
+            Upload your first item
+          </Link>
+          
         </div>
       )}
     </div>
