@@ -18,6 +18,10 @@ export default async function ListingDetailPage({
   const user = await currentUser()
   const { id } = await params
 
+  if (!user) {
+  notFound()
+        }
+
   //finding all the data that fits the id and user id req, retuning them as a
   // single object instead of an array
   const { data: listing } = await supabase

@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { useAuth } from '@clerk/nextjs'
 import { error } from "console"
+import {useRouter} from "next/navigation"
+
 
 export default function UploadPage() {
     const [images, setImages] = useState<File[]>([])
@@ -20,7 +22,8 @@ export default function UploadPage() {
     const [condition, setCondition] = useState('')
     const [tags, setTags] = useState<string[]>([])
     // the user id is needed to insert the listing to the database, so we get it from clerk authentication
-    const { userId } = useAuth()
+
+    const router = useRouter()
 
     // Functions
 
@@ -127,6 +130,8 @@ export default function UploadPage() {
                 })
             )
             })
+
+            
         })
 
         const data = await response.json()
@@ -139,7 +144,7 @@ export default function UploadPage() {
 
         alert('Listing saved successfully!')
 
-        
+        router.push('/dashboard')
         }
 
 
