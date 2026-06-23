@@ -69,7 +69,11 @@ export default async function DashboardPage() {
         <div className="grid grid-cols-3 gap-4">
           
           {listings.map((listing) => (
-            <div key={listing.id} className="bg-white rounded-xl p-5 border shadow-sm flex flex-col gap-2">
+              <Link 
+                href={`/dashboard/listings/${listing.id}`}
+                key={listing.id} 
+                className="bg-white rounded-xl p-5 border shadow-sm flex flex-col gap-2 hover:shadow-md transition"
+              >
               <div className="flex items-center justify-between">
                 <span className="text-xs font-medium bg-gray-100 text-gray-600 px-2 py-1 rounded-full">
                   {listing.status}
@@ -78,7 +82,7 @@ export default async function DashboardPage() {
               </div>
               <p className="font-semibold text-gray-900 text-sm">{listing.title}</p>
               <p className="text-xs text-gray-400">{listing.category}</p>
-            </div>
+            </Link>
           ))}
         </div>
       ) : (
