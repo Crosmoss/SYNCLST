@@ -1,6 +1,8 @@
 import {notFound} from "next/navigation"
 import {createClient} from '@supabase/supabase-js'
 import { currentUser } from "@clerk/nextjs/server"
+import ListingActions from './ListingActions'
+
 
 // Creating the connection to the database
 const supabase = createClient(
@@ -35,12 +37,14 @@ export default async function ListingDetailPage({
     notFound()
   }
 
-  return (
+ return (
   <div className="flex flex-col gap-6 max-w-3xl">
+
+    {/* Images */}
     {listing.images && listing.images.length > 0 && (
       <div className="grid grid-cols-3 gap-4">
         {listing.images.map((img: string, i: number) => (
-          <img 
+          <img
             key={i}
             src={`data:image/jpeg;base64,${img}`}
             alt={`listing image ${i}`}
@@ -50,9 +54,14 @@ export default async function ListingDetailPage({
       </div>
     )}
 
+    {/* Listing details */}
     <h1 className="text-2xl font-bold">{listing.title}</h1>
     <p className="text-gray-500">{listing.description}</p>
     <p className="text-xl font-bold text-violet-600">${listing.price}</p>
+
+    {/* Actions */}
+    <ListingActions listing={listing} />
+
   </div>
 )
 }
