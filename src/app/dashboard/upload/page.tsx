@@ -150,7 +150,7 @@ export default function UploadPage() {
 
     return ( <div className="flex flex-col gap-6 max-w-3xl">
         
-        <h1 className="text-2xl font-bold"> Upload Photos </h1>
+        <h1 className="text-2xl text-zinc-900"> Upload Photos </h1>
 
         <p className="text-gray-500">
             Upload a photo of your item and AI will generate a listing instantly
@@ -223,7 +223,7 @@ export default function UploadPage() {
     
       //  The button is unavailable at the following conditions: no image inserted, at the loading state
       disabled = {images.length == 0 || loading}
-      className="w-full bg-violet-600 hover:bg-violet-700 text-white py-6 text-lg font-bold rounded-xl"
+      className="w-full bg-violet-600 hover:bg-violet-700 text-white py-6 text-lg rounded-xl"
 
       // When clicked the function handles the listing details, the state is set to true/loading
       onClick={handleGenerate}

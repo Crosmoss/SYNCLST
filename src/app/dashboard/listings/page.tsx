@@ -26,13 +26,12 @@ export default async function ListingsPage() {
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Your Listings</h1>
-          <p className="text-gray-500 mt-1">{listings?.length ?? 0} listings total</p>
+          <h1 className="text-xl font-medium text-zinc-900">Your Listings</h1>
+          <p className="text-sm text-zinc-400 mt-1">{listings?.length ?? 0} listings total</p>
         </div>
         <Link
           href="/dashboard/upload"
-          className="bg-violet-600 text-white px-4 py-2 rounded-full text-sm font-semibold hover:bg-violet-700 transition"
-        >
+          className="bg-violet-600 text-white px-4 py-2 rounded-lg text-xs font-medium hover:bg-violet-700 transition"        >
           + New listing
         </Link>
       </div>
@@ -46,8 +45,8 @@ export default async function ListingsPage() {
               className="bg-white border rounded-xl p-5 flex items-center justify-between hover:shadow-md transition"
             >
               <div className="flex flex-col gap-1">
-                <p className="font-semibold text-gray-900">{listing.title}</p>
-                <div className="flex gap-3 text-sm text-gray-400">
+                <p className=" text-zinc-900">{listing.title}</p>
+                <div className="flex gap-3 text-sm text-zinc-400">
                   <span>{listing.category}</span>
                   <span>•</span>
                   <span>{listing.condition}</span>

@@ -3,7 +3,7 @@ import { ClerkProvider } from '@clerk/nextjs'
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Listify",
+  title: "SYNCLST",
   description: "AI-powered listing generator",
 };
 
