@@ -14,7 +14,7 @@ export default async function HomePage() {
 
       {/* Nav */}
       <nav className="flex items-center justify-between px-8 py-5 absolute top-0 left-0 right-0 z-10">
-        <div className="text-2xl font-black text-white">Listify</div>
+        <div className="text-2xl font-black text-white">SYNCLST</div>
         <div className="flex items-center gap-4">
           <Link href="/sign-in" className="text-sm text-white/80 hover:text-white">
             Sign in
